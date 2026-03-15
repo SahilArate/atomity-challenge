@@ -186,7 +186,7 @@ export default function ProviderNode({
         transition: `background ${tokens.transition.base}, border-color ${tokens.transition.base}`,
       }}
     >
-      {/* Node header — icon + badge */}
+
       <div style={{
         display: "flex",
         alignItems: "flex-start",
@@ -197,7 +197,6 @@ export default function ProviderNode({
         <Badge label={node.status} variant={statusVariantMap[node.status]} size="sm" />
       </div>
 
-      {/* Provider name */}
       <div>
         <h3 style={{
           fontSize: tokens.font.md,
@@ -221,10 +220,8 @@ export default function ProviderNode({
         </p>
       </div>
 
-      {/* Pod grid */}
       <PodGrid count={node.podCount} />
 
-      {/* Cost row */}
       <div style={{
         display: "flex",
         alignItems: "center",
@@ -250,7 +247,6 @@ export default function ProviderNode({
         </span>
       </div>
 
-      {/* Savings pill */}
       <div style={{
         background: "var(--color-accent-success-muted)",
         border: "1px solid var(--color-border-accent)",

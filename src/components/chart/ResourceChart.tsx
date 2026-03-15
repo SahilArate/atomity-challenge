@@ -10,7 +10,6 @@ interface ResourceChartProps {
   activeNodeId: string | null;
 }
 
-// Aggregate resources across all nodes or just the active one
 function getAggregatedResources(nodes: CloudNode[], activeNodeId: string | null) {
   const sourceNodes = activeNodeId
     ? nodes.filter((n) => n.id === activeNodeId)
@@ -18,7 +17,6 @@ function getAggregatedResources(nodes: CloudNode[], activeNodeId: string | null)
 
   if (sourceNodes.length === 0) return [];
 
-  // Get all resource types from first node
   const resourceTypes = sourceNodes[0].resources.map((r) => r.type);
 
   return resourceTypes.map((type) => {
@@ -83,7 +81,7 @@ export default function ResourceChart({ nodes, activeNodeId }: ResourceChartProp
       role="region"
       aria-label="Resource usage chart"
     >
-      {/* Chart header */}
+
       <div
         style={{
           display: "flex",
@@ -114,7 +112,6 @@ export default function ResourceChart({ nodes, activeNodeId }: ResourceChartProp
           </p>
         </div>
 
-        {/* Total cost badge */}
         <div
           style={{
             background: "var(--color-accent-success-muted)",
@@ -147,7 +144,6 @@ export default function ResourceChart({ nodes, activeNodeId }: ResourceChartProp
         </div>
       </div>
 
-      {/* Bars */}
       <div
         style={{
           display: "flex",
@@ -171,7 +167,6 @@ export default function ResourceChart({ nodes, activeNodeId }: ResourceChartProp
         ))}
       </div>
 
-      {/* Savings indicator */}
       {activeNode && (
         <motion.div
           initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}

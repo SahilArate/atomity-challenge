@@ -12,7 +12,6 @@ interface TopologyMapProps {
   data: TopologyData;
 }
 
-// Custom hook to track screen size
 function useScreenSize() {
   const [width, setWidth] = useState(1280);
 
@@ -72,7 +71,6 @@ export default function TopologyMap({ data }: TopologyMapProps) {
         width: "100%",
       }}
     >
-      {/* Section header */}
       <motion.div
         variants={shouldReduceMotion ? undefined : headerVariants}
         initial="hidden"
@@ -121,7 +119,6 @@ export default function TopologyMap({ data }: TopologyMapProps) {
           surfacing exactly where your cloud spend goes.
         </p>
 
-        {/* Hint text on mobile */}
         {isMobile && (
           <p
             style={{
@@ -135,9 +132,6 @@ export default function TopologyMap({ data }: TopologyMapProps) {
         )}
       </motion.div>
 
-      {/* =====================
-          DESKTOP LAYOUT
-          ===================== */}
       {isDesktop && (
         <div className="topology-container" style={{ width: "100%" }}>
           <div
@@ -181,10 +175,6 @@ export default function TopologyMap({ data }: TopologyMapProps) {
         </div>
       )}
 
-      {/* =====================
-          TABLET LAYOUT
-          2x2 nodes + chart below
-          ===================== */}
       {isTablet && (
         <div
           style={{
@@ -194,7 +184,6 @@ export default function TopologyMap({ data }: TopologyMapProps) {
             alignItems: "center",
           }}
         >
-          {/* 2x2 node grid */}
           <div
             style={{
               display: "grid",
@@ -215,17 +204,12 @@ export default function TopologyMap({ data }: TopologyMapProps) {
             ))}
           </div>
 
-          {/* Chart below */}
           <div style={{ width: "100%", maxWidth: "480px" }}>
             <ResourceChart nodes={data.nodes} activeNodeId={activeNodeId} />
           </div>
         </div>
       )}
 
-      {/* =====================
-          MOBILE LAYOUT
-          Single column stack
-          ===================== */}
       {isMobile && (
         <div
           style={{
@@ -235,10 +219,10 @@ export default function TopologyMap({ data }: TopologyMapProps) {
             alignItems: "stretch",
           }}
         >
-          {/* Chart first on mobile */}
+       
           <ResourceChart nodes={data.nodes} activeNodeId={activeNodeId} />
 
-          {/* Nodes stacked below */}
+          
           <div
             style={{
               display: "grid",
@@ -259,7 +243,6 @@ export default function TopologyMap({ data }: TopologyMapProps) {
         </div>
       )}
 
-      {/* Bottom stats bar — responsive grid */}
       <motion.div
         variants={shouldReduceMotion ? undefined : statsVariants}
         initial="hidden"

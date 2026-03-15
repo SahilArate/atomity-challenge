@@ -4,11 +4,8 @@ import { useState, useCallback, useSyncExternalStore } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { tokens } from "@/tokens";
 
-// useSyncExternalStore is the React-approved way to read external state (DOM/localStorage)
-// It handles server vs client rendering correctly with no ESLint warnings
 function useTheme() {
   const theme = useSyncExternalStore(
-    // Subscribe — called when we need to listen for changes
     (onStoreChange) => {
       const observer = new MutationObserver(onStoreChange);
       observer.observe(document.documentElement, {
@@ -17,9 +14,7 @@ function useTheme() {
       });
       return () => observer.disconnect();
     },
-    // getSnapshot — what to read on client
     () => document.documentElement.getAttribute("data-theme") ?? "light",
-    // getServerSnapshot — what to return on server (always light)
     () => "light"
   );
 

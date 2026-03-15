@@ -1,6 +1,5 @@
 import type { ApiProduct, CloudNode, TopologyData, ResourceMetric, ResourceType, CloudProvider } from "@/types";
 
-// Each cloud provider maps to a fixed index in the products array
 const PROVIDER_CONFIG: Record<CloudProvider, { label: string; region: string }> = {
   aws: { label: "AWS", region: "us-east-1" },
   azure: { label: "Azure", region: "eu-west-1" },
@@ -10,8 +9,6 @@ const PROVIDER_CONFIG: Record<CloudProvider, { label: string; region: string }> 
 
 const RESOURCE_TYPES: ResourceType[] = ["CPU", "GPU", "RAM", "PV", "Network", "Cloud"];
 
-// Deterministically derive resource metrics from a product's numeric fields
-// We use price and stock as seed values so the data looks varied but consistent
 function deriveResources(product: ApiProduct): ResourceMetric[] {
   const seed = product.price;
   const multiplier = product.stock / 100;
@@ -34,7 +31,6 @@ function deriveResources(product: ApiProduct): ResourceMetric[] {
 }
 
 function deriveSavings(rating: number): number {
-  // rating is 0-5, we map it to a 10-70% savings range
   return Math.round((rating / 5) * 60 + 10);
 }
 
@@ -44,7 +40,6 @@ function deriveStatus(rating: number): CloudNode["status"] {
   return "critical";
 }
 
-// Main mapper — takes 4 products and maps each to a cloud provider node
 export function mapProductsToTopology(products: ApiProduct[]): TopologyData {
   const providers: CloudProvider[] = ["aws", "azure", "gcp", "onpremise"];
 
@@ -67,7 +62,7 @@ export function mapProductsToTopology(products: ApiProduct[]): TopologyData {
   });
 
   const totalMonthlyCost = nodes.reduce((sum, n) => sum + n.totalCost, 0);
-  const totalSavings = Math.round(totalMonthlyCost * 0.68); // Atomity's ~70% savings claim
+  const totalSavings = Math.round(totalMonthlyCost * 0.68); 
 
   return {
     nodes,

@@ -43,7 +43,6 @@ export default function ConnectionLine({ isActive }: ConnectionLineProps) {
       }}
       aria-hidden="true"
     >
-      {/* Dotted line track */}
       <motion.div
         initial={{ scaleX: 0 }}
         animate={isVisible ? { scaleX: 1 } : { scaleX: 0 }}
@@ -63,7 +62,6 @@ export default function ConnectionLine({ isActive }: ConnectionLineProps) {
         }}
       />
 
-      {/* Traveling pulse dot */}
       {isVisible && !shouldReduceMotion && (
         <motion.div
           animate={{

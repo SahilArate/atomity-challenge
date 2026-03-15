@@ -63,7 +63,6 @@ export default function ResourceBar({
     return () => observer.disconnect();
   }, []);
 
-  // "spring" typed as const so TypeScript knows it's a literal, not just string
   const barVariants: Variants = {
     hidden: { scaleY: 0, opacity: 0 },
     visible: {
