@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { tokens } from "@/tokens";
 import type { TopologyData } from "@/types";
@@ -12,9 +12,28 @@ interface TopologyMapProps {
   data: TopologyData;
 }
 
+// Custom hook to track screen size
+function useScreenSize() {
+  const [width, setWidth] = useState(1280);
+
+  useEffect(() => {
+    const update = () => setWidth(window.innerWidth);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  return {
+    isMobile: width < 640,
+    isTablet: width >= 640 && width < 1024,
+    isDesktop: width >= 1024,
+  };
+}
+
 export default function TopologyMap({ data }: TopologyMapProps) {
   const shouldReduceMotion = useReducedMotion();
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
+  const { isMobile, isTablet, isDesktop } = useScreenSize();
 
   const handleNodeClick = useCallback((id: string) => {
     setActiveNodeId((prev) => (prev === id ? null : id));
@@ -101,96 +120,158 @@ export default function TopologyMap({ data }: TopologyMapProps) {
           Connects across AWS, Azure, GCP and on-premise clusters
           surfacing exactly where your cloud spend goes.
         </p>
+
+        {/* Hint text on mobile */}
+        {isMobile && (
+          <p
+            style={{
+              fontSize: tokens.font.sm,
+              color: tokens.colors.textMuted,
+              marginTop: tokens.spacing.xs,
+            }}
+          >
+            Tap a provider to filter resources ↓
+          </p>
+        )}
       </motion.div>
 
-      {/* Topology grid */}
-      <div className="topology-container" style={{ width: "100%" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "175px 1fr auto 1fr 175px",
-            gridTemplateRows: "auto auto",
-            gap: tokens.spacing.lg,
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
-          {/* Top-left node */}
-          <div style={{ gridColumn: 1, gridRow: 1 }}>
-            <ProviderNode
-              node={topLeft}
-              isActive={activeNodeId === topLeft.id}
-              onSelect={handleNodeClick}
-              index={0}
-            />
-          </div>
-
-          {/* Top connection line left */}
-          <div style={{ gridColumn: 2, gridRow: 1 }}>
-            <ConnectionLine isActive={activeNodeId === topLeft.id} />
-          </div>
-
-          {/* Central chart — spans both rows */}
-          <div style={{ gridColumn: 3, gridRow: "1 / 3", alignSelf: "center" }}>
-            <ResourceChart nodes={data.nodes} activeNodeId={activeNodeId} />
-          </div>
-
-          {/* Top connection line right */}
-          <div style={{ gridColumn: 4, gridRow: 1 }}>
-            <ConnectionLine isActive={activeNodeId === topRight.id} />
-          </div>
-
-          {/* Top-right node */}
-          <div style={{ gridColumn: 5, gridRow: 1 }}>
-            <ProviderNode
-              node={topRight}
-              isActive={activeNodeId === topRight.id}
-              onSelect={handleNodeClick}
-              index={1}
-            />
-          </div>
-
-          {/* Bottom-left node */}
-          <div style={{ gridColumn: 1, gridRow: 2 }}>
-            <ProviderNode
-              node={bottomLeft}
-              isActive={activeNodeId === bottomLeft.id}
-              onSelect={handleNodeClick}
-              index={2}
-            />
-          </div>
-
-          {/* Bottom connection line left */}
-          <div style={{ gridColumn: 2, gridRow: 2 }}>
-            <ConnectionLine isActive={activeNodeId === bottomLeft.id} />
-          </div>
-
-          {/* Bottom connection line right */}
-          <div style={{ gridColumn: 4, gridRow: 2 }}>
-            <ConnectionLine isActive={activeNodeId === bottomRight.id} />
-          </div>
-
-          {/* Bottom-right node */}
-          <div style={{ gridColumn: 5, gridRow: 2 }}>
-            <ProviderNode
-              node={bottomRight}
-              isActive={activeNodeId === bottomRight.id}
-              onSelect={handleNodeClick}
-              index={3}
-            />
+      {/* =====================
+          DESKTOP LAYOUT
+          ===================== */}
+      {isDesktop && (
+        <div className="topology-container" style={{ width: "100%" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "175px 1fr auto 1fr 175px",
+              gridTemplateRows: "auto auto",
+              gap: tokens.spacing.lg,
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <div style={{ gridColumn: 1, gridRow: 1 }}>
+              <ProviderNode node={topLeft} isActive={activeNodeId === topLeft.id} onSelect={handleNodeClick} index={0} />
+            </div>
+            <div style={{ gridColumn: 2, gridRow: 1 }}>
+              <ConnectionLine isActive={activeNodeId === topLeft.id} />
+            </div>
+            <div style={{ gridColumn: 3, gridRow: "1 / 3", alignSelf: "center" }}>
+              <ResourceChart nodes={data.nodes} activeNodeId={activeNodeId} />
+            </div>
+            <div style={{ gridColumn: 4, gridRow: 1 }}>
+              <ConnectionLine isActive={activeNodeId === topRight.id} />
+            </div>
+            <div style={{ gridColumn: 5, gridRow: 1 }}>
+              <ProviderNode node={topRight} isActive={activeNodeId === topRight.id} onSelect={handleNodeClick} index={1} />
+            </div>
+            <div style={{ gridColumn: 1, gridRow: 2 }}>
+              <ProviderNode node={bottomLeft} isActive={activeNodeId === bottomLeft.id} onSelect={handleNodeClick} index={2} />
+            </div>
+            <div style={{ gridColumn: 2, gridRow: 2 }}>
+              <ConnectionLine isActive={activeNodeId === bottomLeft.id} />
+            </div>
+            <div style={{ gridColumn: 4, gridRow: 2 }}>
+              <ConnectionLine isActive={activeNodeId === bottomRight.id} />
+            </div>
+            <div style={{ gridColumn: 5, gridRow: 2 }}>
+              <ProviderNode node={bottomRight} isActive={activeNodeId === bottomRight.id} onSelect={handleNodeClick} index={3} />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Bottom stats bar */}
+      {/* =====================
+          TABLET LAYOUT
+          2x2 nodes + chart below
+          ===================== */}
+      {isTablet && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: tokens.spacing.xl,
+            alignItems: "center",
+          }}
+        >
+          {/* 2x2 node grid */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: tokens.spacing.lg,
+              width: "100%",
+              maxWidth: "480px",
+            }}
+          >
+            {data.nodes.map((node, i) => (
+              <ProviderNode
+                key={node.id}
+                node={node}
+                isActive={activeNodeId === node.id}
+                onSelect={handleNodeClick}
+                index={i}
+              />
+            ))}
+          </div>
+
+          {/* Chart below */}
+          <div style={{ width: "100%", maxWidth: "480px" }}>
+            <ResourceChart nodes={data.nodes} activeNodeId={activeNodeId} />
+          </div>
+        </div>
+      )}
+
+      {/* =====================
+          MOBILE LAYOUT
+          Single column stack
+          ===================== */}
+      {isMobile && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: tokens.spacing.lg,
+            alignItems: "stretch",
+          }}
+        >
+          {/* Chart first on mobile */}
+          <ResourceChart nodes={data.nodes} activeNodeId={activeNodeId} />
+
+          {/* Nodes stacked below */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: tokens.spacing.md,
+            }}
+          >
+            {data.nodes.map((node, i) => (
+              <ProviderNode
+                key={node.id}
+                node={node}
+                isActive={activeNodeId === node.id}
+                onSelect={handleNodeClick}
+                index={i}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Bottom stats bar — responsive grid */}
       <motion.div
         variants={shouldReduceMotion ? undefined : statsVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.5 }}
+        viewport={{ once: true, amount: 0.3 }}
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
+          gridTemplateColumns: isMobile
+            ? "1fr"
+            : isTablet
+            ? "1fr 1fr"
+            : "repeat(3, 1fr)",
           gap: tokens.spacing.md,
         }}
       >
@@ -220,11 +301,9 @@ export default function TopologyMap({ data }: TopologyMapProps) {
               background: stat.highlight
                 ? "var(--color-accent-success-muted)"
                 : "var(--color-bg-card)",
-              border: `1.5px solid ${
-                stat.highlight
-                  ? "var(--color-border-accent)"
-                  : "var(--color-border-primary)"
-              }`,
+              border: `1.5px solid ${stat.highlight
+                ? "var(--color-border-accent)"
+                : "var(--color-border-primary)"}`,
               borderRadius: tokens.radius.lg,
               padding: tokens.spacing.lg,
               boxShadow: "var(--shadow-card)",
