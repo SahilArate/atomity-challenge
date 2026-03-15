@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { tokens } from "@/tokens";
@@ -15,9 +17,7 @@ function useCountUp(target: number, duration: number = 1200, shouldStart: boolea
 
   useEffect(() => {
     if (!shouldStart) return;
-
     const startTime = performance.now();
-
     const tick = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
@@ -25,7 +25,6 @@ function useCountUp(target: number, duration: number = 1200, shouldStart: boolea
       setCurrent(Math.round(target * eased));
       if (progress < 1) requestAnimationFrame(tick);
     };
-
     requestAnimationFrame(tick);
   }, [target, duration, shouldStart]);
 
@@ -48,7 +47,6 @@ export default function ResourceBar({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -58,7 +56,6 @@ export default function ResourceBar({
       },
       { threshold: 0.3 }
     );
-
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -90,37 +87,42 @@ export default function ResourceBar({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: tokens.spacing.sm,
+        gap: "4px",
         flex: 1,
-        minWidth: 0,
+        minWidth: "0px",
+        maxWidth: "100%",
       }}
     >
+      {/* Cost label above bar */}
       <span
         style={{
-          fontSize: tokens.font.sm,
-          color: isHighlighted ? tokens.colors.textPrimary : tokens.colors.textMuted,
+          fontSize: "0.65rem",
+          color: isHighlighted
+            ? tokens.colors.textPrimary
+            : tokens.colors.textMuted,
           fontWeight: 600,
           transition: `color ${tokens.transition.base}`,
           fontVariantNumeric: "tabular-nums",
+          whiteSpace: "nowrap",
         }}
         aria-live="polite"
       >
         ${animatedCost}
       </span>
 
+      {/* Bar track */}
       <div
         style={{
           width: "100%",
-          height: "120px",
+          height: "100px",
           display: "flex",
           alignItems: "flex-end",
           background: "var(--color-bg-secondary)",
           borderRadius: tokens.radius.sm,
           overflow: "hidden",
-          position: "relative",
         }}
         role="meter"
-        aria-label={`${metric.type} usage: ${metric.value} ${metric.unit}`}
+        aria-label={`${metric.type}: ${metric.value} ${metric.unit}`}
         aria-valuenow={metric.value}
         aria-valuemin={0}
         aria-valuemax={maxValue}
@@ -137,19 +139,28 @@ export default function ResourceBar({
               : "var(--color-text-muted)",
             borderRadius: `${tokens.radius.sm} ${tokens.radius.sm} 0 0`,
             transformOrigin: "bottom",
-            boxShadow: isHighlighted ? "0 -2px 12px var(--color-node-glow)" : "none",
-            transition: `background ${tokens.transition.base}, box-shadow ${tokens.transition.base}`,
+            boxShadow: isHighlighted
+              ? "0 -2px 12px var(--color-node-glow)"
+              : "none",
+            transition: `background ${tokens.transition.base}`,
           }}
         />
       </div>
 
+      {/* Resource type label */}
       <span
         style={{
-          fontSize: tokens.font.sm,
-          color: isHighlighted ? tokens.colors.textSecondary : tokens.colors.textMuted,
+          fontSize: "0.65rem",
+          color: isHighlighted
+            ? tokens.colors.textSecondary
+            : tokens.colors.textMuted,
           fontWeight: 500,
           transition: `color ${tokens.transition.base}`,
           textAlign: "center",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          width: "100%",
         }}
       >
         {metric.type}
