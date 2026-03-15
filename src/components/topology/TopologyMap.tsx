@@ -108,7 +108,7 @@ export default function TopologyMap({ data }: TopologyMapProps) {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "auto 1fr auto 1fr auto",
+            gridTemplateColumns: "175px 1fr auto 1fr 175px",
             gridTemplateRows: "auto auto",
             gap: tokens.spacing.lg,
             alignItems: "center",

@@ -153,7 +153,8 @@ export default function ResourceChart({ nodes, activeNodeId }: ResourceChartProp
           display: "flex",
           alignItems: "flex-end",
           gap: tokens.spacing.sm,
-          paddingTop: tokens.spacing.sm,
+          paddingTop: tokens.spacing.md,
+          overflowX: "auto",
         }}
         role="list"
         aria-label="Resource breakdown"
